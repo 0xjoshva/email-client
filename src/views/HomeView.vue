@@ -55,13 +55,37 @@
           v-model="subject"
         />
         <textarea placeholder="Hi there," v-model="message"></textarea>
+        <button @click="enhanceText()" class="enhance-btn">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="icon icon-tabler icon-tabler-wand"
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="#000000"
+            fill="none"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <polyline points="6 21 21 6 18 3 3 18 6 21" />
+            <line x1="15" y1="6" x2="18" y2="9" />
+            <path
+              d="M9 3a2 2 0 0 0 2 2a2 2 0 0 0 -2 2a2 2 0 0 0 -2 -2a2 2 0 0 0 2 -2"
+            />
+            <path
+              d="M19 13a2 2 0 0 0 2 2a2 2 0 0 0 -2 2a2 2 0 0 0 -2 -2a2 2 0 0 0 2 -2"
+            />
+          </svg>
+        </button>
         <button class="send-msg" @click="sendEmail()">Send message</button>
       </div>
     </div>
   </main>
 </template>
 <script>
-
+import axios from "axios";
 
 export default {
   name: "HomeView",
@@ -73,23 +97,7 @@ export default {
       subject: "",
       createParticipantOpen: false,
       participantsFocused: false,
-      participants: [
-        {
-          id: 1,
-          name: "Joshua Steed",
-          email: "joshuasteed123@gmail.com",
-        },
-        {
-          id: 2,
-          name: "Emily Johnson",
-          email: "emilyjohnson456@gmail.com",
-        },
-        {
-          id: 3,
-          name: "Michael Thompson",
-          email: "michaelthompson789@gmail.com",
-        },
-      ],
+      participants: [],
     };
   },
   computed: {
@@ -131,7 +139,8 @@ export default {
         gapi.client
           .init({
             apiKey: "AIzaSyC_zkuKm-Ic123NHjXECEtXv_4txK7MhkQ",
-            clientId: "25998444239-2huammqhu5i4jqefi8jtl88a7ocgj19k.apps.googleusercontent.com",
+            clientId:
+              "25998444239-2huammqhu5i4jqefi8jtl88a7ocgj19k.apps.googleusercontent.com",
             discoveryDocs: [
               "https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest",
             ],
@@ -167,6 +176,38 @@ export default {
               });
           });
       });
+    },
+    enhanceText() {
+      // Call the ChatGPT API to enhance the text in this.message
+      const prompt = `Enhance the following text: ${this.message}`;
+      const apiKey = "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";
+      const apiUrl =
+        "https://api.openai.com/v1/engines/davinci-codex/completions";
+
+      // Set the headers for the API request
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      };
+
+      // Set the data for the API request
+      const data = {
+        prompt: prompt,
+        max_tokens: 100,
+      };
+
+      // Make a POST request to the ChatGPT API
+      axios
+        .post(apiUrl, data, { headers })
+        .then((response) => {
+          // Extract the enhanced text from the API response
+          const enhancedText = response.data.choices[0].text;
+          // Update this.message with the enhanced text
+          this.message = enhancedText;
+        })
+        .catch((error) => {
+          console.error(`Failed to enhance text: ${error}`);
+        });
     },
   },
 };
@@ -391,5 +432,23 @@ textarea:focus {
 .moveDown {
   transition: ease all 1s;
   transform: translate(0px, 50px);
+}
+.enhance-btn {
+  width: 40px;
+  height: auto;
+  border: none;
+  outline: none;
+  background: transparent;
+  background: #dbe2fd;
+  color: #2956f4;
+  padding-inline: 0.3rem;
+  padding-block: 0.3rem;
+  border-radius: 50%;
+  cursor: pointer;
+  position: absolute;
+  transform: translate(325px, 130px)
+}
+.enhance-btn svg {
+  stroke: #2956f4;
 }
 </style>
