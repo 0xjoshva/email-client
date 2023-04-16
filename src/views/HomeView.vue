@@ -86,6 +86,7 @@
 </template>
 <script>
 import axios from "axios";
+import { GAPI_KEY, GAPI_CLIENT_ID, AI_API_KEY } from "./src/.env";
 
 export default {
   name: "HomeView",
@@ -138,9 +139,8 @@ export default {
         // Initialize the Gmail API client
         gapi.client
           .init({
-            apiKey: "AIzaSyC_zkuKm-Ic123NHjXECEtXv_4txK7MhkQ",
-            clientId:
-              "25998444239-2huammqhu5i4jqefi8jtl88a7ocgj19k.apps.googleusercontent.com",
+            apiKey: "GAPI_KEY",
+            clientId: "GAPI_CLIENT_ID",
             discoveryDocs: [
               "https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest",
             ],
@@ -177,10 +177,14 @@ export default {
           });
       });
     },
+    //a function that resets all participants array
+    resetParticipants() {
+      this.participants = [];
+    },
     enhanceText() {
       // Call the ChatGPT API to enhance the text in this.message
       const prompt = `Enhance the following text: ${this.message}`;
-      const apiKey = "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";
+      const apiKey = "AI_API_KEY";
       const apiUrl =
         "https://api.openai.com/v1/engines/davinci-codex/completions";
 
@@ -446,7 +450,7 @@ textarea:focus {
   border-radius: 50%;
   cursor: pointer;
   position: absolute;
-  transform: translate(325px, 130px)
+  transform: translate(325px, 130px);
 }
 .enhance-btn svg {
   stroke: #2956f4;
