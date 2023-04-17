@@ -55,7 +55,7 @@
           v-model="subject"
         />
         <textarea placeholder="Hi there," v-model="message"></textarea>
-        <button @click="enhanceText()" class="enhance-btn">
+        <button @click="enhanceText2()" class="enhance-btn">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="icon icon-tabler icon-tabler-wand"
@@ -86,7 +86,8 @@
 </template>
 <script>
 import axios from "axios";
-import { GAPI_KEY, GAPI_CLIENT_ID, AI_API_KEY } from "./src/.env";
+//import environment variables from .env
+// import { GAPI_KEY, AI_API_KEY, GAPI_CLIENT_ID } from "../views/.env";
 
 export default {
   name: "HomeView",
@@ -139,8 +140,8 @@ export default {
         // Initialize the Gmail API client
         gapi.client
           .init({
-            apiKey: "GAPI_KEY",
-            clientId: "GAPI_CLIENT_ID",
+            apiKey: import.meta.env.VITE_GAPI_KEY,
+            clientId: import.meta.env.VITE_CLIENT_ID,
             discoveryDocs: [
               "https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest",
             ],
@@ -184,7 +185,7 @@ export default {
     enhanceText() {
       // Call the ChatGPT API to enhance the text in this.message
       const prompt = `Enhance the following text: ${this.message}`;
-      const apiKey = "AI_API_KEY";
+      const apiKey = import.meta.env.VITE_AI_API_KEY;
       const apiUrl =
         "https://api.openai.com/v1/engines/davinci-codex/completions";
 
@@ -213,6 +214,27 @@ export default {
           console.error(`Failed to enhance text: ${error}`);
         });
     },
+    async enhanceText2() {
+    const prompt = "This is a test.";
+    const maxTokens = 100;
+
+    try {
+      const response = await axios.post("https://api.openai.com/v1/engines/davinci-codex/completions", {
+        prompt,
+        max_tokens: maxTokens,
+      }, {
+        headers: {
+          'Authorization': 'Bearer ' + import.meta.env.VITE_AI_API_KEY,
+          'Content-Type': 'application/json'
+        }
+      });
+      // Process the response from the OpenAI API
+      console.log(response.data);
+    } catch (error) {
+      // Handle any errors that occurred during the API request
+      console.error("Failed to enhance text:", error);
+    }
+  },
   },
 };
 </script>
