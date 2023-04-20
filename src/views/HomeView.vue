@@ -55,7 +55,7 @@
           v-model="subject"
         />
         <textarea placeholder="Hi there," v-model="message"></textarea>
-        <button @click="enhanceText2()" class="enhance-btn">
+        <button @click="enhanceText()" class="enhance-btn">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="icon icon-tabler icon-tabler-wand"
@@ -178,63 +178,33 @@ export default {
           });
       });
     },
-    //a function that resets all participants array
     resetParticipants() {
       this.participants = [];
     },
-    enhanceText() {
-      // Call the ChatGPT API to enhance the text in this.message
-      const prompt = `Enhance the following text: ${this.message}`;
-      const apiKey = import.meta.env.VITE_AI_API_KEY;
-      const apiUrl =
-        "https://api.openai.com/v1/engines/davinci-codex/completions";
+    async enhanceText() {
+      try {
+        const prompt = `Enhance the following text: ${this.message}`;
+        const apiKey = import.meta.env.VITE_AI_API_KEY;
+        const apiUrl =
+          "https://api.openai.com/v1/engines/davinci-codex/completions";
 
-      // Set the headers for the API request
-      const headers = {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      };
+        const headers = {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        };
 
-      // Set the data for the API request
-      const data = {
-        prompt: prompt,
-        max_tokens: 100,
-      };
+        const data = {
+          prompt: prompt,
+          max_tokens: 100,
+        };
 
-      // Make a POST request to the ChatGPT API
-      axios
-        .post(apiUrl, data, { headers })
-        .then((response) => {
-          // Extract the enhanced text from the API response
-          const enhancedText = response.data.choices[0].text;
-          // Update this.message with the enhanced text
-          this.message = enhancedText;
-        })
-        .catch((error) => {
-          console.error(`Failed to enhance text: ${error}`);
-        });
+        const response = await axios.post(apiUrl, data, { headers });
+        const enhancedText = response.data.choices[0].text;
+        this.message = enhancedText;
+      } catch (error) {
+        console.error(`Failed to enhance text: ${error}`);
+      }
     },
-    async enhanceText2() {
-    const prompt = "This is a test.";
-    const maxTokens = 100;
-
-    try {
-      const response = await axios.post("https://api.openai.com/v1/engines/davinci-codex/completions", {
-        prompt,
-        max_tokens: maxTokens,
-      }, {
-        headers: {
-          'Authorization': 'Bearer ' + import.meta.env.VITE_AI_API_KEY,
-          'Content-Type': 'application/json'
-        }
-      });
-      // Process the response from the OpenAI API
-      console.log(response.data);
-    } catch (error) {
-      // Handle any errors that occurred during the API request
-      console.error("Failed to enhance text:", error);
-    }
-  },
   },
 };
 </script>
